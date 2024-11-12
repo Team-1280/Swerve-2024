@@ -163,7 +163,7 @@ public final class Constants {
     private static final boolean kFrontLeftSteerInvert = true;
 
     private static final double kFrontLeftXPosInches = 11.375;
-    private static final double kFrontLeftYPosInches = 11.375;
+    private static final double kFrontLeftYPosInches = -11.375;
 
     // Front Right
     private static final int kFrontRightDriveMotorId = 3;
@@ -173,7 +173,7 @@ public final class Constants {
     private static final boolean kFrontRightSteerInvert = true;
 
     private static final double kFrontRightXPosInches = 11.375;
-    private static final double kFrontRightYPosInches = -11.375;
+    private static final double kFrontRightYPosInches = 11.375;
 
     // Back Left
     private static final int kBackLeftDriveMotorId = 7;
@@ -183,7 +183,7 @@ public final class Constants {
     private static final boolean kBackLeftSteerInvert = true;
 
     private static final double kBackLeftXPosInches = -11.375;
-    private static final double kBackLeftYPosInches = 11.375;
+    private static final double kBackLeftYPosInches = -11.375;
 
     // Back Right
     private static final int kBackRightDriveMotorId = 5;
@@ -194,7 +194,7 @@ public final class Constants {
     private static final boolean kBackRightSteerInvert = true;
 
     private static final double kBackRightXPosInches = -11.375;
-    private static final double kBackRightYPosInches = -11.375;
+    private static final double kBackRightYPosInches = 11.375;
 
     private static final SwerveModuleConstants frontLeft = ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset, Units.inchesToMeters(kFrontLeftXPosInches), Units.inchesToMeters(kFrontLeftYPosInches), kInvertLeftSide)
