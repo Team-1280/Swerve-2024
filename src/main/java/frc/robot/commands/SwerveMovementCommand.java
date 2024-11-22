@@ -7,7 +7,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Drivetrain;
 import frc.robot.subsystems.SwerveDriveSubsystem;
@@ -29,6 +32,9 @@ public class SwerveMovementCommand extends Command {
     private double angularSpeedMultiplier = 0.8;
     private double driveDeadband = 0.1;
 
+    private Mechanism2d inputVectorVisualization;
+    private MechanismRoot2d inputVectorRoot;
+
     public SwerveMovementCommand(SwerveDriveSubsystem swerve,
         DoubleSupplier x_supplier,
         DoubleSupplier y_supplier,
@@ -40,6 +46,9 @@ public class SwerveMovementCommand extends Command {
         this.x_supplier = x_supplier;
         this.y_supplier = y_supplier;
         this.rot_supplier = rot_supplier;
+        
+        this.inputVectorVisualization = new Mechanism2d(4, 4, new Color8Bit(0, 0, 0));
+        this.inputVectorRoot = this.inputVectorVisualization.getRoot("joystick", 2, 2);
     }
 
     @Override
@@ -49,7 +58,7 @@ public class SwerveMovementCommand extends Command {
         driveAngle.HeadingController = m_thetaController;
     }
 
-    public void handleInput() {
+    public void handleJoystickInput() {
         this.rot_val = MathUtil.applyDeadband(rot_supplier.getAsDouble() * this.angularSpeedMultiplier, 0.1);
         double x = x_supplier.getAsDouble();
         double y = y_supplier.getAsDouble(); 
@@ -67,7 +76,7 @@ public class SwerveMovementCommand extends Command {
 
     @Override
     public void execute() {
-        handleInput();
+        handleJoystickInput();
 
         this.request = drive
             .withVelocityX(this.x_val * Drivetrain.MAX_DRIVE_VOLTAGE)
@@ -75,6 +84,11 @@ public class SwerveMovementCommand extends Command {
             .withRotationalRate(this.rot_val * Drivetrain.MAX_TURN_VOLTAGE);
 
         this.m_swerve.setControl(request);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
     }
 
     @Override
