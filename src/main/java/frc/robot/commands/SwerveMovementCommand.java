@@ -7,9 +7,13 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Drivetrain;
@@ -32,8 +36,30 @@ public class SwerveMovementCommand extends Command {
     private double angularSpeedMultiplier = 0.8;
     private double driveDeadband = 0.1;
 
-    private Mechanism2d inputVectorVisualization;
-    private MechanismRoot2d inputVectorRoot;
+    class InputVisualization {
+        public Mechanism2d mechanism;
+        private MechanismRoot2d root;
+        private MechanismLigament2d desiredVector;
+        private MechanismLigament2d actualVector;
+
+        InputVisualization() {
+            this.mechanism = new Mechanism2d(2, 2, new Color8Bit(0, 0, 0));
+            this.root = this.mechanism.getRoot("joystick", 1, 1);
+            this.desiredVector = this.root.append(new MechanismLigament2d("desired", 1, 90));
+            this.desiredVector.setColor(new Color8Bit(Color.kAliceBlue));
+            this.actualVector = this.root.append(new MechanismLigament2d("actual", 1, 90));
+            this.actualVector.setColor(new Color8Bit(Color.kRed));
+        }
+
+        void update(double desiredX, double desiredY, double actualX, double actualY) {
+            this.desiredVector.setLength(Math.sqrt(desiredX * desiredX + desiredY * desiredY));
+            this.desiredVector.setAngle(new Rotation2d(desiredY, desiredX));
+            this.actualVector.setLength(Math.sqrt(actualX * actualX + actualY * actualY));
+            this.actualVector.setAngle(new Rotation2d(actualY, actualX));
+        }
+    }
+
+    private InputVisualization visualization;
 
     public SwerveMovementCommand(SwerveDriveSubsystem swerve,
         DoubleSupplier x_supplier,
@@ -47,8 +73,7 @@ public class SwerveMovementCommand extends Command {
         this.y_supplier = y_supplier;
         this.rot_supplier = rot_supplier;
         
-        this.inputVectorVisualization = new Mechanism2d(4, 4, new Color8Bit(0, 0, 0));
-        this.inputVectorRoot = this.inputVectorVisualization.getRoot("joystick", 2, 2);
+        this.visualization = new InputVisualization();
     }
 
     @Override
@@ -56,6 +81,8 @@ public class SwerveMovementCommand extends Command {
         m_thetaController = new PhoenixPIDController(3.2, 0, 0);
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
         driveAngle.HeadingController = m_thetaController;
+
+        SmartDashboard.putData(this.getName()+"/inputs", this.visualization.mechanism);
     }
 
     public void handleJoystickInput() {
@@ -72,6 +99,8 @@ public class SwerveMovementCommand extends Command {
             this.x_val = x / Math.abs(x) * MathUtil.interpolate(0, this.speedMultiplier, Math.abs(x));
             this.y_val = y / Math.abs(y) * MathUtil.interpolate(0, this.speedMultiplier, Math.abs(y));
         }
+
+        this.visualization.update(x, y, this.x_val, this.y_val);
     }
 
     @Override
@@ -89,6 +118,10 @@ public class SwerveMovementCommand extends Command {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
+        builder.setSmartDashboardType(this.getName());
+        builder.addDoubleProperty("speed multiplier", () -> this.speedMultiplier, (k) -> this.speedMultiplier = k);
+        builder.addDoubleProperty("rotational speed multiplier", () -> this.angularSpeedMultiplier, (k) -> this.angularSpeedMultiplier = k);
+        builder.addDoubleProperty("rotational velocity (rad/s)", () -> this.rot_val * Drivetrain.MAX_TURN_VOLTAGE, null);
     }
 
     @Override

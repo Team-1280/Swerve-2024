@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.SwerveMovementCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
@@ -33,15 +34,19 @@ public class RobotContainer {
   }
 
   public void configureBindings() {
-     m_swerveDriveSubsystem.setDefaultCommand(
-      new SwerveMovementCommand(
-        m_swerveDriveSubsystem,
-        () -> -m_controller.getLeftY(),
-        () -> -m_controller.getLeftX(),
-        () -> -m_controller.getRightX()
-      )
+    SwerveMovementCommand movementCommand = new SwerveMovementCommand(
+      m_swerveDriveSubsystem,
+      () -> -m_controller.getLeftY(),
+      () -> -m_controller.getLeftX(),
+      () -> -m_controller.getRightX()
+    );
+
+    m_swerveDriveSubsystem.setDefaultCommand(
+      movementCommand
     );
     m_controller.resetHeading().onTrue(m_swerveDriveSubsystem.runOnce(() -> m_swerveDriveSubsystem.seedFieldRelative()));
+
+    SmartDashboard.putData(movementCommand);
   }
 
   /**
