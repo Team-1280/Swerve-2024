@@ -45,10 +45,13 @@ public class SwerveMovementCommand extends Command {
         InputVisualization() {
             this.mechanism = new Mechanism2d(2, 2, new Color8Bit(0, 0, 0));
             this.root = this.mechanism.getRoot("joystick", 1, 1);
+            this.actualVector = this.root.append(new MechanismLigament2d("actual", speedMultiplier, 90));
+            this.actualVector.setColor(new Color8Bit("#FF0000"));
+            this.actualVector.setLineWeight(0.8);
             this.desiredVector = this.root.append(new MechanismLigament2d("desired", 1, 90));
-            this.desiredVector.setColor(new Color8Bit(Color.kAliceBlue));
-            this.actualVector = this.root.append(new MechanismLigament2d("actual", 1, 90));
-            this.actualVector.setColor(new Color8Bit(Color.kRed));
+            this.desiredVector.setColor(new Color8Bit("#FFFFFF"));
+            this.desiredVector.setLineWeight(0.2);
+
         }
 
         void update(double desiredX, double desiredY, double actualX, double actualY) {
@@ -100,7 +103,7 @@ public class SwerveMovementCommand extends Command {
             this.y_val = y / Math.abs(y) * MathUtil.interpolate(0, this.speedMultiplier, Math.abs(y));
         }
 
-        this.visualization.update(x, y, this.x_val, this.y_val);
+        this.visualization.update(x, -y, this.x_val, -this.y_val);
     }
 
     @Override
@@ -121,7 +124,7 @@ public class SwerveMovementCommand extends Command {
         builder.setSmartDashboardType(this.getName());
         builder.addDoubleProperty("speed multiplier", () -> this.speedMultiplier, (k) -> this.speedMultiplier = k);
         builder.addDoubleProperty("rotational speed multiplier", () -> this.angularSpeedMultiplier, (k) -> this.angularSpeedMultiplier = k);
-        builder.addDoubleProperty("rotational velocity (rad/s)", () -> this.rot_val * Drivetrain.MAX_TURN_VOLTAGE, null);
+        builder.addDoubleProperty("rotational velocity (rad|s)", () -> this.rot_val * Drivetrain.MAX_TURN_VOLTAGE, null);
     }
 
     @Override
