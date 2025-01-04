@@ -1,6 +1,7 @@
 package frc.robot.subsystems.aesthetic;
 
 import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 
@@ -28,13 +29,13 @@ public class Music {
         bach.addInstrument(mID8,8);
     }
     public void myWay(){
-        var exist = bach.loadMusic("myway.chrp");
+        StatusCode exist = bach.loadMusic("myway.chrp");
         if(!exist.isOK()){
             bach.play();
         }
     }
     public void starSprangledBanner(){
-        var exist = bach.loadMusic("us.chrp");
+        StatusCode exist = bach.loadMusic("us.chrp");
         if(!exist.isOK()){
             bach.play();
         }
