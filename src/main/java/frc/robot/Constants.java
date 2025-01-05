@@ -206,9 +206,9 @@ public final class Constants {
     }
 
     public static class Vision {
-        public static final double kProportionalRotation = 1.0; // Proportional gain (tune for rotation)
-        public static final double kMaxAngularSpeed = 2.0;
-        public static final double tolerance = 0.01; // Tolerance for AprilTag alignment. Tune as neeeded
+        public static final double kProportionalRotation = Math.PI; // Proportional gain (tune for rotation)
+        public static final double kMaxAngularSpeed = 1;
+        public static final double tolerance = 0.05; // Tolerance for AprilTag alignment. Tune as neeeded
     }
 
 }
