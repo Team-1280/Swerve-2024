@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.SwerveMovementCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.aesthetic.Colors;
 import frc.robot.subsystems.aesthetic.Colors.Effect;
 import frc.robot.util.AgnosticController;
@@ -21,12 +22,16 @@ import frc.robot.util.AgnosticController;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveDriveSubsystem m_swerveDriveSubsystem = new SwerveDriveSubsystem();
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(m_swerveDriveSubsystem);
   // REN CODE!!!
   private final Colors m_color = new Colors();
   // private final Music m_music = new Music();
 
   private final AgnosticController m_controller = new AgnosticController();
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
@@ -35,14 +40,14 @@ public class RobotContainer {
 
   public void configureBindings() {
     SwerveMovementCommand movementCommand = new SwerveMovementCommand(
-      m_swerveDriveSubsystem,
-      () -> -m_controller.getLeftY(),
-      () -> -m_controller.getLeftX(),
-      () -> -m_controller.getRightX()
+            m_swerveDriveSubsystem,
+            () -> -m_controller.getLeftY(),
+            () -> -m_controller.getLeftX(),
+            () -> -m_controller.getRightX()
     );
 
     m_swerveDriveSubsystem.setDefaultCommand(
-      movementCommand
+            movementCommand
     );
     m_controller.resetHeading().onTrue(m_swerveDriveSubsystem.runOnce(() -> m_swerveDriveSubsystem.seedFieldRelative()));
 
