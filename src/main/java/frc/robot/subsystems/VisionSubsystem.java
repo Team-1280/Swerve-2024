@@ -38,10 +38,22 @@ public class VisionSubsystem extends SubsystemBase {
         this.m_swerveDriveSubsystem.driveRobotRelative(new ChassisSpeeds(0, 0, angularSpeed));
     }
 
+    public boolean isAlignedWithAprilTag() {
+        Pose3d aprilTagPosition = LimelightHelpers.getTargetPose3d_CameraSpace("");
+        double tagRotation = aprilTagPosition.getRotation().getY();
+        double robotRotation = this.m_swerveDriveSubsystem.getPose().getRotation().getRadians();
+        double desiredRotation = Math.atan2(Math.sin(tagRotation - robotRotation), Math.cos(tagRotation - robotRotation));
+        return Math.abs(desiredRotation) < Constants.Vision.tolerance;
+    }
+
+    public void stop() {
+        this.m_swerveDriveSubsystem.driveRobotRelative(new ChassisSpeeds(0, 0, 0));
+    }
+
+
     @Override
     public void periodic() {
-        // Temporary
-        moveToAprilTagPeriodic();
+        // nothing atm
     }
 
     @Override
